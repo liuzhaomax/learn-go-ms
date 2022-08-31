@@ -21,8 +21,9 @@ message AccountRes {
     string mobile=2;
     string password=3;
     string nickname=4;
-    string gender=5;
-    uint32 role=6;
+    string salt=5;
+    string gender=6;
+    uint32 role=7;
 }
 
 message AccountListRes {
@@ -42,7 +43,8 @@ message AddAccountRequest {
     string mobile=1;
     string password=2;
     string nickName=3;
-    string gender=4;
+    string salt=4;
+    string gender=5;
 }
 
 message UpdateAccountRequest {
@@ -50,8 +52,9 @@ message UpdateAccountRequest {
     string mobile=2;
     string password=3;
     string nickName=4;
-    string gender=5;
-    uint32 role=6;
+    string salt=5;
+    string gender=6;
+    uint32 role=7;
 }
 
 message UpdateAccountRes {
@@ -59,7 +62,7 @@ message UpdateAccountRes {
 }
 
 message CheckPasswordRequest {
-    string pasword=1;
+    string password=1;
     string hashedPassword=2;
     uint32 accountId=3;
 }
