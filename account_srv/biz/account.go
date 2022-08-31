@@ -2,10 +2,12 @@ package biz
 
 import (
 	"context"
+	"errors"
 	"gorm.io/gorm"
 	"learn-go-ms/account_srv/internal"
 	"learn-go-ms/account_srv/model"
 	"learn-go-ms/account_srv/proto/pb"
+	"learn-go-ms/custom_error"
 )
 
 type AccountServer struct {
@@ -55,11 +57,23 @@ func Model2Pb(account model.Account) *pb.AccountRes {
 }
 
 func (a *AccountServer) GetAccountByMobile(ctx context.Context, req *pb.MobileRequest) (*pb.AccountRes, error) {
-	return &pb.AccountRes{}, nil
+	var account model.Account
+	result := internal.DB.Where(&model.Account{Mobile: req.Mobile}).First(&account)
+	if result.RowsAffected == 0 {
+		return nil, errors.New(custom_error.AccountNotFound)
+	}
+	res := Model2Pb(account)
+	return res, nil
 }
 
 func (a *AccountServer) GetAccountById(ctx context.Context, req *pb.IdRequest) (*pb.AccountRes, error) {
-	return &pb.AccountRes{}, nil
+	var account model.Account
+	result := internal.DB.First(&account, req.Id)
+	if result.RowsAffected == 0 {
+		return nil, errors.New(custom_error.AccountNotFound)
+	}
+	res := Model2Pb(account)
+	return res, nil
 }
 
 func (a *AccountServer) AddAccount(ctx context.Context, req *pb.AddAccountRequest) (*pb.AccountRes, error) {
