@@ -10,6 +10,7 @@ import (
 	"learn-go-ms/custom_error"
 	"learn-go-ms/log"
 	"net/http"
+	"strconv"
 )
 
 func HandleError(err error) string {
@@ -29,6 +30,10 @@ func HandleError(err error) string {
 }
 
 func AccountListHandler(c *gin.Context) {
+	pageNoStr := c.DefaultQuery("pageNo", "1")
+	pageSizeStr := c.DefaultQuery("pageSize", "3")
+	pageNo, _ := strconv.ParseInt(pageNoStr, 10, 32)
+	pageSize, _ := strconv.ParseInt(pageSizeStr, 10, 32)
 	conn, err := grpc.Dial("127.0.0.1:9095", grpc.WithInsecure())
 	if err != nil {
 		s := fmt.Sprintf("AccountListHandler-GRPC拨号失败：%s", err.Error())
@@ -41,8 +46,8 @@ func AccountListHandler(c *gin.Context) {
 	}
 	client := pb.NewAccountServiceClient(conn)
 	r, err := client.GetAccountList(context.Background(), &pb.PagingRequest{
-		PageNo:   1,
-		PageSize: 3,
+		PageNo:   uint32(pageNo),
+		PageSize: uint32(pageSize),
 	})
 	if err != nil {
 		s := fmt.Sprintf("AccountListHandler-GRPC调用失败：%s", err.Error())
