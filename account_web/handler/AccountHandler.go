@@ -3,14 +3,18 @@ package handler
 import (
 	"context"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"learn-go-ms/account_srv/proto/pb"
+	"learn-go-ms/account_web/req"
 	"learn-go-ms/account_web/res"
 	"learn-go-ms/custom_error"
+	"learn-go-ms/jwt_op"
 	"learn-go-ms/log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func HandleError(err error) string {
@@ -76,4 +80,89 @@ func pb2res(accountRes *pb.AccountRes) res.Account4Res {
 		NickName: accountRes.Nickname,
 		Gender:   accountRes.Gender,
 	}
+}
+
+func LoginByPasswordHandler(c *gin.Context) {
+	var loginByPassword req.LoginByPassword
+	err := c.ShouldBind(&loginByPassword)
+	if err != nil {
+		log.Logger.Error("LoginByPassword出错" + err.Error())
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "解析参数错误",
+		})
+		return
+	}
+	// TODO 校验手机号码正则表达式
+	conn, err := grpc.Dial("127.0.0.1:9095", grpc.WithInsecure())
+	if err != nil {
+		s := fmt.Sprintf("LoginByPasswordHandler 拨号出错：%s", err.Error())
+		log.Logger.Error(s)
+		e := HandleError(err)
+		c.JSON(http.StatusOK, gin.H{
+			"msg": e,
+		})
+		return
+	}
+	client := pb.NewAccountServiceClient(conn)
+	r, err := client.GetAccountByMobile(context.Background(), &pb.MobileRequest{
+		Mobile: loginByPassword.Mobile,
+	})
+	if err != nil {
+		s := fmt.Sprintf("GRPC GetAccountByMobile 出错：%s", err.Error())
+		log.Logger.Error(s)
+		e := HandleError(err)
+		c.JSON(http.StatusOK, gin.H{
+			"msg": e,
+		})
+		return
+	}
+	cheRes, err := client.CheckPassword(context.Background(), &pb.CheckPasswordRequest{
+		Password:       loginByPassword.Password,
+		HashedPassword: r.Password,
+		AccountId:      uint32(r.Id),
+	})
+	if err != nil {
+		s := fmt.Sprintf("GRPC GetAccountByMobile 出错：%s", err.Error())
+		log.Logger.Error(s)
+		e := HandleError(err)
+		c.JSON(http.StatusOK, gin.H{
+			"msg": e,
+		})
+		return
+	}
+	checkResult := "登录失败"
+	if cheRes.Result {
+		checkResult = "登录成功"
+		j := jwt_op.NewJWT()
+		now := time.Now()
+		claims := jwt_op.CustomClaims{
+			StandardClaims: jwt.StandardClaims{
+				NotBefore: now.Unix(),
+				ExpiresAt: now.Add(time.Hour * 24 * 30).Unix(),
+			},
+			ID:          r.Id,
+			NickName:    r.Nickname,
+			AuthorityId: int32(r.Role),
+		}
+		token, err := j.GenerateJWT(claims)
+		if err != nil {
+			s := fmt.Sprintf("GRPC GenerateJWT 出错：%s", err.Error())
+			log.Logger.Error(s)
+			e := HandleError(err)
+			c.JSON(http.StatusOK, gin.H{
+				"msg": e,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"msg":    "",
+			"result": checkResult,
+			"token":  token,
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"msg":    "",
+		"result": checkResult,
+		"token":  "",
+	})
 }
