@@ -3,6 +3,8 @@
 
 *.log
 captcha.png
+data
+redis-data
 
 test
 

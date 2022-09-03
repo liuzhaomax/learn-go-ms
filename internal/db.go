@@ -25,7 +25,7 @@ func InitDB() {
 			Colorful:                  true,
 		},
 	)
-	conn := fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", "root", "123456", "localhost", 3306, "happy_account_mic_training")
+	conn := fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", "root", "123456", "localhost", 3308, "happy_account_mic_training")
 	DB, err = gorm.Open(mysql.Open(conn), &gorm.Config{
 		Logger: newLogger,
 		NamingStrategy: schema.NamingStrategy{
