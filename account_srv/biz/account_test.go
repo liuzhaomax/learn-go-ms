@@ -3,8 +3,8 @@ package biz
 import (
 	"context"
 	"fmt"
-	"learn-go-ms/account_srv/internal"
 	"learn-go-ms/account_srv/proto/pb"
+	"learn-go-ms/internal"
 	"testing"
 )
 

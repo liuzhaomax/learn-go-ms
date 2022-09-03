@@ -17,6 +17,7 @@ func main() {
 	{
 		accountGroup.GET("/list", handler.AccountListHandler)
 		accountGroup.POST("/login", handler.LoginByPasswordHandler)
+		accountGroup.GET("/captcha", handler.CaptchaHandler)
 	}
 	r.Run(addr)
 }

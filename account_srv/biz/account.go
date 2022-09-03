@@ -6,10 +6,10 @@ import (
 	"errors"
 	"github.com/anaskhan96/go-password-encoder"
 	"gorm.io/gorm"
-	"learn-go-ms/account_srv/internal"
 	"learn-go-ms/account_srv/model"
 	"learn-go-ms/account_srv/proto/pb"
 	"learn-go-ms/custom_error"
+	"learn-go-ms/internal"
 )
 
 type AccountServer struct {
