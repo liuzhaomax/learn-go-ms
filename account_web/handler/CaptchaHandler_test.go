@@ -1,10 +1,10 @@
 package handler
 
-import "testing"
+import (
+	"github.com/gin-gonic/gin"
+	"testing"
+)
 
-func TestGenCaptcha(t *testing.T) {
-	err := GenCaptcha()
-	if err != nil {
-		panic(err)
-	}
+func TestCaptchaHandler(t *testing.T) {
+	CaptchaHandler(&gin.Context{})
 }
