@@ -12,8 +12,11 @@ func init() {
 	v := viper.New()
 	configName := "dev-config.yaml"
 	v.SetConfigFile(configName)
-	v.ReadInConfig()
-	err := v.Unmarshal(&AppConf)
+	err := v.ReadInConfig()
+	if err != nil {
+		panic(err)
+	}
+	err = v.Unmarshal(&AppConf)
 	if err != nil {
 		panic(err)
 	}
