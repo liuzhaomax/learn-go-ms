@@ -5,3 +5,19 @@ redis:
 consul:
   host: "127.0.0.1"
   port: "8500"
+
+account_srv:
+  srvName: "account_srv"
+  host: "127.0.0.1"
+  port: "9095"
+  tags:
+    - happy
+    - account_srv
+
+account_web:
+  srvName: "account_web"
+  host: "127.0.0.1"
+  port: "8081"
+  tags:
+    - happy
+    - account_web
