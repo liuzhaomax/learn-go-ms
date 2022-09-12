@@ -19,5 +19,6 @@ func init() {
 }
 
 type ViperConfig struct {
-	RedisConfig RedisConfig `mapstructure:"redis"`
+	RedisConfig  RedisConfig  `mapstructure:"redis"`
+	ConsulConfig ConsulConfig `mapstructure:"consul"`
 }
