@@ -40,3 +40,6 @@ func InitDB() {
 		fmt.Println(err)
 	}
 }
+
+type DBConfig struct {
+}

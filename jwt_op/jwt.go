@@ -3,7 +3,7 @@ package jwt_op
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	"learn-go-ms/conf"
+	"learn-go-ms/internal"
 	"learn-go-ms/log"
 	"time"
 )
@@ -27,7 +27,7 @@ type JWT struct {
 }
 
 func NewJWT() *JWT {
-	return &JWT{SigningKey: []byte(conf.AppConf.JWTConfig.SigningKey)}
+	return &JWT{SigningKey: []byte(internal.AppConf.JWTConfig.SigningKey)}
 }
 
 func (j *JWT) GenerateJWT(claims CustomClaims) (string, error) {

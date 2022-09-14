@@ -1,38 +1,23 @@
-package internal
+package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/nacos-group/nacos-sdk-go/v2/clients"
 	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
-	"github.com/spf13/viper"
+	"learn-go-ms/internal"
 )
 
-var AppConf AppConfig
-var NacosConf NacosConfig
-
-var fileName = "./prod-config.yaml"
-
-func initNacos() {
-	v := viper.New()
-	v.SetConfigFile(fileName)
-	v.ReadInConfig()
-	v.Unmarshal(&NacosConf)
-	fmt.Println(NacosConf)
-	fmt.Println("Viper初始化完成...")
-	InitRedis()
-}
-
-func initFromNacos() {
+func main() {
+	nacosConfig := internal.ViperConf.NacosConfig
 	serverConfigs := []constant.ServerConfig{
 		{
-			IpAddr: NacosConf.Host,
-			Port:   NacosConf.Port,
+			IpAddr: nacosConfig.Host,
+			Port:   nacosConfig.Port,
 		},
 	}
 	clientConfig := constant.ClientConfig{
-		NamespaceId:         NacosConf.NameSpace,
+		NamespaceId:         nacosConfig.NameSpace,
 		TimeoutMs:           5000,
 		NotLoadCacheAtStart: true,
 		LogDir:              "nacos/log",
@@ -47,18 +32,11 @@ func initFromNacos() {
 		panic(err)
 	}
 	content, err := configClient.GetConfig(vo.ConfigParam{
-		DataId: NacosConf.DataId,
-		Group:  NacosConf.Group,
+		DataId: nacosConfig.DataId,
+		Group:  nacosConfig.Group,
 	})
 	if err != nil {
 		panic(err)
 	}
-	json.Unmarshal([]byte(content), &AppConf)
-}
-
-func init() {
-	initNacos()
-	initFromNacos()
-	fmt.Println("Viper初始化完成...")
-	InitRedis()
+	fmt.Println(content)
 }

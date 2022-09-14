@@ -1,8 +1,8 @@
 host: "127.0.0.1"
 port: 8848
-namespace: "5f7b12e5-9229-491f-816b-87dd82a15dea"
-dataid: "account.yaml"
-group: "dev"
+namespace: "55dde173-9dbd-4100-b348-a5a1ece89ce6"
+dataid: "account.json"
+group: "prod"
 
 #debug: false
 #db:
